@@ -1,0 +1,1504 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#10131A">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="mobile-web-app-capable" content="yes">
+<title>Agenda Vida</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ccircle cx='50' cy='50' r='46' fill='%23E8A33D'/%3E%3Cpath d='M28 52 L44 68 L74 34' stroke='%2314161d' stroke-width='11' fill='none' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,500;0,9..144,600;1,9..144,500&family=Manrope:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&family=Playfair+Display:wght@500;600;700&family=Merriweather:wght@400;700&family=Poppins:wght@400;500;600;700&family=Inter:wght@400;500;600;700&family=Space+Grotesk:wght@500;600;700&family=Nunito:wght@500;600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root {
+    color-scheme: dark;
+    --bg: #10131A;
+    --surface: #1B1F2B;
+    --surface-2: #232839;
+    --border: #2C3241;
+    --ink: #EDEFF4;
+    --ink-dim: #8891A3;
+    --ink-faint: #5B6272;
+    --gold: #E8A33D;
+    --overdue: #E5544A;
+    --pri-normal: #8891A3;
+    --pri-importante: #E8A33D;
+    --pri-urgente: #E5544A;
+    --cat-organizar: #7C8699;
+    --cat-pessoal: #6FCBDA;
+    --cat-familia: #E58FA0;
+    --cat-trabalho: #D99A5B;
+    --cat-ministerio: #A99BE0;
+    --cat-ajuda: #85C69A;
+    --radius-s: 8px;
+    --radius-m: 14px;
+    --radius-l: 20px;
+    --font-display: 'Fraunces', Georgia, serif;
+    --font-body: 'Manrope', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    --font-mono: 'JetBrains Mono', ui-monospace, SFMono-Regular, Menlo, monospace;
+  }
+  html[data-theme="light"] {
+    color-scheme: light;
+    --bg: #F5EFE0;
+    --surface: #FFFFFF;
+    --surface-2: #F3EDDF;
+    --border: #E3D9C4;
+    --ink: #2A2620;
+    --ink-dim: #6E6858;
+    --ink-faint: #A79F8C;
+    --gold: #C6842A;
+  }
+  * { box-sizing: border-box; }
+  @media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after { animation-duration: 0.01ms !important; transition-duration: 0.01ms !important; }
+  }
+  html, body { margin: 0; padding: 0; background: var(--bg); color: var(--ink); font-family: var(--font-body); -webkit-font-smoothing: antialiased; }
+  .wrap { max-width: 640px; margin: 0 auto; padding: 0 16px 100px; }
+
+  header.app-header { padding: 26px 4px 4px; display: flex; align-items: baseline; justify-content: space-between; }
+  h1 { font-family: var(--font-display); font-weight: 600; font-size: 26px; margin: 0; letter-spacing: -0.01em; }
+  h1 em { color: var(--gold); font-style: italic; }
+  .today-date { font-family: var(--font-mono); font-size: 12px; color: var(--ink-dim); text-transform: uppercase; letter-spacing: 0.08em; text-align: right; }
+
+  .utility-bar { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; margin: 14px 0 22px; }
+  .util-btn {
+    font-family: var(--font-mono); font-size: 11px; letter-spacing: 0.03em;
+    padding: 7px 11px; border-radius: var(--radius-s); border: 1px solid var(--border);
+    background: var(--surface); color: var(--ink-dim); cursor: pointer; white-space: nowrap;
+  }
+  .util-btn:hover { border-color: var(--ink-faint); color: var(--ink); }
+  .util-btn.active { border-color: var(--gold); color: var(--gold); }
+  .save-status { font-family: var(--font-mono); font-size: 10px; color: var(--gold); opacity: 0; transition: opacity 0.4s ease; margin-left: auto; }
+  .save-status.flash { opacity: 1; }
+
+  .capture { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-l); padding: 6px 6px 16px 4px; box-shadow: 0 10px 30px rgba(0,0,0,0.35); margin-bottom: 26px; }
+  .capture-row { display: flex; align-items: center; gap: 4px; }
+  .capture input[type=text] { flex: 1; background: transparent; border: none; outline: none; color: var(--ink); font-family: var(--font-body); font-size: 16px; padding: 14px 6px; min-width: 0; }
+  .capture input[type=text]::placeholder { color: var(--ink-faint); }
+  .capture-submit { border: none; cursor: pointer; flex-shrink: 0; border-radius: 50%; width: 40px; height: 40px; display: flex; align-items: center; justify-content: center; background: var(--gold); color: #1A1206; font-size: 18px; font-weight: 700; transition: transform 0.15s ease; }
+  .capture-submit:active { transform: scale(0.9); }
+  .mic-btn { border: 1px solid var(--border); cursor: pointer; flex-shrink: 0; border-radius: 50%; width: 40px; height: 40px; display: flex; align-items: center; justify-content: center; background: var(--surface-2); color: var(--ink-dim); font-size: 16px; transition: transform 0.15s ease; }
+  .mic-btn:active { transform: scale(0.9); }
+  .mic-btn.listening { background: var(--overdue); color: #fff; border-color: var(--overdue); animation: micPulse 1s infinite; }
+  @keyframes micPulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.6; } }
+
+  .capture-details-inner { padding: 10px 12px 0; border-top: 1px solid var(--border); margin-top: 8px; display: flex; flex-direction: column; gap: 14px; }
+  .chip-row { display: flex; flex-wrap: wrap; gap: 8px; }
+  .chip { font-family: var(--font-body); font-size: 13px; font-weight: 600; padding: 7px 13px; border-radius: 20px; border: 1px solid var(--border); background: var(--surface-2); color: var(--ink-dim); cursor: pointer; display: flex; align-items: center; gap: 6px; transition: border-color 0.15s ease, color 0.15s ease, background 0.15s ease; }
+  .chip:hover { border-color: var(--ink-faint); }
+  .chip .dot { width: 8px; height: 8px; border-radius: 50%; background: var(--dot, var(--ink-faint)); flex-shrink: 0; }
+  .cat-icon { font-size: 1em; line-height: 1; flex-shrink: 0; }
+  .frente-row[hidden] { display: none; }
+  .frente-row { margin-top: -4px; }
+  .task.cancelada .checkbox { background: var(--ink-faint); border-color: var(--ink-faint); }
+  .task.cancelada .checkbox svg { opacity: 1; }
+  .task.cancelada .task-title { text-decoration: line-through; color: var(--ink-faint); }
+  .chip.active { color: var(--ink); border-color: var(--chip-color, var(--gold)); background: var(--surface); }
+  .chip.pri-normal.active { border-color: var(--pri-normal); color: var(--ink); background: color-mix(in srgb, var(--pri-normal) 14%, transparent); }
+  .chip.pri-importante.active { border-color: var(--pri-importante); color: var(--pri-importante); background: color-mix(in srgb, var(--pri-importante) 14%, transparent); }
+  .chip.pri-urgente.active { border-color: var(--pri-urgente); color: var(--pri-urgente); background: color-mix(in srgb, var(--pri-urgente) 14%, transparent); }
+
+  .field-row { display: flex; gap: 10px; }
+  .field { flex: 1; display: flex; flex-direction: column; gap: 6px; }
+  .field label { font-family: var(--font-mono); font-size: 10px; letter-spacing: 0.08em; text-transform: uppercase; color: var(--ink-faint); }
+  .field input[type=date], .field input[type=time], .field textarea {
+    background: var(--surface-2); border: 1px solid var(--border); border-radius: var(--radius-s);
+    color: var(--ink); font-family: var(--font-body); font-size: 16px; padding: 10px; width: 100%;
+  }
+  .date-wrap { cursor: pointer; }
+  select {
+    background: var(--surface-2); border: 1px solid var(--border); border-radius: var(--radius-s);
+    color: var(--ink); font-family: var(--font-body); font-size: 15px; padding: 11px 12px; width: 100%; cursor: pointer;
+  }
+  select:focus { border-color: var(--gold); outline: none; }
+  optgroup { font-weight: 700; color: var(--ink-faint); }
+  option { color: var(--ink); background: var(--surface); }
+  .subtask-capture { border: 1px solid var(--border); border-radius: var(--radius-s); background: var(--surface-2); overflow: hidden; }
+  .subtask-capture summary { padding: 11px 12px; cursor: pointer; font-size: 14px; color: var(--ink-dim); list-style: none; display: flex; align-items: center; gap: 6px; }
+  .subtask-capture summary::-webkit-details-marker { display: none; }
+  .subtask-capture[open] summary { border-bottom: 1px solid var(--border); }
+  .subtask-capture textarea { border: none; background: transparent; width: 100%; padding: 10px 12px; font-family: var(--font-body); color: var(--ink); font-size: 15px; resize: vertical; min-height: 70px; }
+  .subtask-capture .field-hint { padding: 0 12px 10px; margin: 0; }
+  #subtaskSummaryHint { color: var(--gold); font-family: var(--font-mono); font-size: 12px; }
+  .cat-filter-select { flex-shrink: 0; width: auto; max-width: 42vw; font-size: 13px; padding: 8px 10px; }
+  .field textarea { resize: vertical; min-height: 68px; font-family: var(--font-body); }
+  .field-hint { font-size: 11px; color: var(--ink-faint); margin: 0; }
+
+  .capture-actions { display: flex; gap: 10px; justify-content: flex-end; }
+  .btn { font-family: var(--font-body); font-weight: 700; font-size: 13px; padding: 10px 16px; border-radius: var(--radius-s); border: 1px solid var(--border); background: transparent; color: var(--ink-dim); cursor: pointer; }
+  .btn:hover { border-color: var(--ink-faint); color: var(--ink); }
+  .btn.danger { color: var(--overdue); border-color: transparent; }
+  .btn.danger:hover { border-color: var(--overdue); }
+
+  .tabs-row { display: flex; align-items: center; gap: 8px; margin-bottom: 12px; }
+  .tabs { display: flex; gap: 6px; overflow-x: auto; flex: 1; }
+  .tab { font-family: var(--font-mono); font-size: 12px; letter-spacing: 0.06em; text-transform: uppercase; padding: 8px 14px; border-radius: 20px; border: 1px solid transparent; background: transparent; color: var(--ink-faint); cursor: pointer; white-space: nowrap; }
+  .tab:hover { color: var(--ink-dim); }
+  .tab.active { background: var(--surface); color: var(--gold); border-color: var(--border); }
+  .share-btn { font-size: 15px; padding: 8px 12px; border-radius: 20px; border: 1px solid var(--border); background: transparent; color: var(--ink-faint); cursor: pointer; flex-shrink: 0; }
+  .share-btn:hover { border-color: #25D366; color: #25D366; }
+
+  .cat-filters { display: flex; gap: 8px; overflow-x: auto; padding-bottom: 18px; margin-bottom: 10px; border-bottom: 1px solid var(--border); }
+
+  .group { margin-bottom: 26px; }
+  .group-title { font-family: var(--font-mono); font-size: 11px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--ink-faint); margin: 0 0 10px 2px; }
+  .group-title .count { color: var(--ink-dim); }
+
+  .task { display: flex; align-items: flex-start; gap: 12px; padding: 13px 12px; background: var(--surface); border: 1px solid var(--border); border-left: 3px solid var(--cat-color, var(--border)); border-radius: var(--radius-m); margin-bottom: 8px; animation: rise 0.22s ease; }
+  @keyframes rise { from { opacity: 0; transform: translateY(4px);} to {opacity:1; transform:none;} }
+  .task.untriaged { border-left-style: dashed; }
+  .task.overdue { border-left-color: var(--overdue); }
+  .task.done { opacity: 0.5; }
+
+  .checkbox { width: 24px; height: 24px; border-radius: 50%; border: 2px solid var(--ink-faint); flex-shrink: 0; margin-top: 1px; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: border-color 0.15s, background 0.15s; }
+  .task.done .checkbox { background: var(--gold); border-color: var(--gold); }
+  .checkbox svg { width: 13px; height: 13px; opacity: 0; transition: opacity 0.15s; }
+  .task.done .checkbox svg { opacity: 1; }
+
+  .task-body { flex: 1; min-width: 0; cursor: pointer; }
+  .task-title { font-size: 15px; font-weight: 600; line-height: 1.35; }
+  .task.done .task-title { text-decoration: line-through; color: var(--ink-dim); }
+  .task-meta { display: flex; align-items: center; gap: 10px; margin-top: 5px; flex-wrap: wrap; }
+  .task-cat { display: flex; align-items: center; gap: 5px; font-size: 11px; color: var(--ink-dim); }
+  .task-cat .dot { width: 7px; height: 7px; border-radius: 50%; background: var(--cat-color); flex-shrink: 0; }
+  .task-date { font-family: var(--font-mono); font-size: 11px; color: var(--ink-faint); }
+  .task.overdue .task-date { color: var(--overdue); }
+  .flag-pri { font-family: var(--font-mono); font-size: 11px; }
+  .flag-pri.urgente { color: var(--pri-urgente); }
+  .flag-pri.importante { color: var(--pri-importante); }
+
+  .subtask-details { margin-top: 9px; }
+  .subtask-details summary { font-family: var(--font-mono); font-size: 11px; color: var(--ink-faint); cursor: pointer; list-style: none; }
+  .subtask-details summary::-webkit-details-marker { display: none; }
+  .subtask-details summary::before { content: '▸ '; }
+  .subtask-details[open] summary::before { content: '▾ '; }
+  .subtask-list { margin-top: 8px; padding-left: 6px; border-left: 2px solid var(--border); display: flex; flex-direction: column; gap: 9px; }
+  .subtask { display: flex; align-items: center; gap: 8px; padding-left: 10px; cursor: pointer; }
+  .sub-checkbox { width: 16px; height: 16px; border-radius: 5px; border: 2px solid var(--ink-faint); flex-shrink: 0; }
+  .subtask.done .sub-checkbox { background: var(--gold); border-color: var(--gold); }
+  .sub-title { font-size: 13px; color: var(--ink-dim); }
+  .subtask.done .sub-title { text-decoration: line-through; color: var(--ink-faint); }
+
+  .task-del { background: none; border: none; color: var(--ink-faint); cursor: pointer; padding: 6px; flex-shrink: 0; font-size: 20px; line-height: 1; }
+  .task-del:hover { color: var(--overdue); }
+
+  .empty { padding: 34px 18px; text-align: center; color: var(--ink-dim); font-size: 14px; border: 1px dashed var(--border); border-radius: var(--radius-m); }
+  .empty strong { display: block; color: var(--ink); font-family: var(--font-display); font-size: 18px; margin-bottom: 6px; font-weight: 500; }
+
+  footer.hint { text-align: center; color: var(--ink-faint); font-size: 12px; margin-top: 24px; padding-bottom: 10px; line-height: 1.6; }
+
+  :focus-visible { outline: 2px solid var(--gold); outline-offset: 2px; }
+  ::-webkit-scrollbar { height: 0; width: 6px; }
+  ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 4px; }
+
+  /* ---------- Settings ---------- */
+  .settings-overlay { position: fixed; inset: 0; z-index: 50; display: flex; align-items: flex-end; justify-content: center; }
+  .settings-overlay[hidden] { display: none; }
+  .settings-backdrop { position: absolute; inset: 0; background: rgba(0,0,0,0.55); backdrop-filter: blur(2px); }
+  .settings-panel {
+    position: relative; width: 100%; max-width: 640px; max-height: 88vh; overflow-y: auto;
+    background: var(--surface); border: 1px solid var(--border); border-bottom: none;
+    border-radius: 22px 22px 0 0; padding: 4px 4px 26px; box-shadow: 0 -10px 40px rgba(0,0,0,0.45);
+    animation: slideUp 0.25s ease;
+  }
+  @keyframes slideUp { from { transform: translateY(24px); opacity: 0; } to { transform: none; opacity: 1; } }
+  .settings-header { display: flex; align-items: center; justify-content: space-between; padding: 18px 18px 10px; position: sticky; top: 0; background: var(--surface); border-radius: 22px 22px 0 0; }
+  .settings-header h2 { font-family: var(--font-display); font-weight: 600; font-size: 19px; margin: 0; }
+  .settings-close { background: var(--surface-2); border: 1px solid var(--border); color: var(--ink-dim); width: 32px; height: 32px; border-radius: 50%; font-size: 18px; line-height: 1; cursor: pointer; flex-shrink: 0; }
+  .settings-close:hover { color: var(--ink); border-color: var(--ink-faint); }
+  .settings-body { padding: 6px 18px 0; display: flex; flex-direction: column; gap: 24px; }
+  .settings-section { display: flex; flex-direction: column; gap: 10px; }
+  .settings-label { font-family: var(--font-mono); font-size: 11px; letter-spacing: 0.06em; text-transform: uppercase; color: var(--ink-faint); }
+  .settings-label #themeColorLabel { text-transform: none; letter-spacing: 0; color: var(--ink-dim); font-family: var(--font-body); }
+  .settings-input {
+    background: var(--surface-2); border: 1px solid var(--border); border-radius: var(--radius-s);
+    color: var(--ink); font-family: var(--font-body); font-size: 16px; padding: 11px 12px; width: 100%;
+  }
+  #themeChips .chip.active { border-color: var(--gold); color: var(--gold); background: var(--surface-2); }
+
+  .color-row { display: flex; gap: 16px; flex-wrap: wrap; }
+  .color-field { display: flex; align-items: center; gap: 10px; font-size: 13px; color: var(--ink-dim); cursor: pointer; }
+  .color-field input[type=color] { -webkit-appearance: none; appearance: none; width: 36px; height: 36px; border: 1px solid var(--border); border-radius: 50%; background: none; cursor: pointer; padding: 0; overflow: hidden; }
+  .color-field input[type=color]::-webkit-color-swatch-wrapper { padding: 0; }
+  .color-field input[type=color]::-webkit-color-swatch { border: none; border-radius: 50%; }
+
+  .font-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 8px; }
+  .font-chip {
+    text-align: left; padding: 12px 13px; border-radius: var(--radius-s); border: 1px solid var(--border);
+    background: var(--surface-2); color: var(--ink-dim); cursor: pointer; font-size: 15px;
+  }
+  .font-chip.active { border-color: var(--gold); color: var(--gold); background: color-mix(in srgb, var(--gold) 10%, transparent); }
+  .font-chip .font-chip-label { display: block; font-size: 10px; font-family: var(--font-mono); text-transform: uppercase; letter-spacing: 0.05em; color: var(--ink-faint); margin-top: 3px; }
+  .font-chip.active .font-chip-label { color: var(--gold); opacity: 0.8; }
+
+  .cat-icon-list { display: flex; flex-direction: column; }
+  .cat-icon-row { display: flex; align-items: center; justify-content: space-between; padding: 8px 2px; }
+  .cat-icon-row-label { display: flex; align-items: center; gap: 9px; font-size: 14px; color: var(--ink); }
+  .settings-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--dot); flex-shrink: 0; }
+  .cat-icon-btn { width: 40px; height: 40px; border-radius: 50%; border: 1px solid var(--border); background: var(--surface-2); font-size: 17px; cursor: pointer; flex-shrink: 0; }
+  .cat-icon-btn:hover { border-color: var(--gold); }
+  .emoji-grid { display: grid; grid-template-columns: repeat(6, 1fr); gap: 6px; padding: 8px 2px 16px; }
+  .emoji-grid[hidden] { display: none; }
+  .emoji-btn { font-size: 18px; padding: 7px 0; border-radius: var(--radius-s); border: 1px solid transparent; background: var(--surface-2); cursor: pointer; }
+  .emoji-btn:hover { border-color: var(--gold); }
+
+  .settings-reset { align-self: flex-start; }
+
+  /* ---------- Metas ---------- */
+  input[type=range] { accent-color: var(--gold); width: 100%; }
+  .btn.primary { background: var(--gold); color: #1A1206; border-color: var(--gold); }
+  .btn.primary:hover { opacity: 0.9; }
+  .meta-list { display: flex; flex-direction: column; gap: 10px; margin-top: 20px; }
+  .meta-card { background: var(--surface-2); border: 1px solid var(--border); border-left: 3px solid var(--cat-color, var(--border)); border-radius: var(--radius-s); padding: 12px 14px; }
+  .meta-card-top { display: flex; align-items: center; justify-content: space-between; gap: 8px; font-size: 12px; color: var(--ink-faint); font-family: var(--font-mono); cursor: pointer; }
+  .meta-card-title { font-family: var(--font-body); font-weight: 700; font-size: 15px; color: var(--ink); margin: 6px 0 8px; cursor: pointer; }
+  .meta-progress { height: 6px; border-radius: 3px; background: var(--border); overflow: hidden; margin-bottom: 6px; }
+  .meta-progress-fill { height: 100%; background: var(--gold); border-radius: 3px; }
+  .meta-card-meta { display: flex; justify-content: space-between; font-size: 12px; color: var(--ink-dim); }
+  .meta-card.concluida .meta-progress-fill { background: var(--pri-normal); }
+  .meta-card.cancelada { opacity: 0.55; }
+  .meta-card.cancelada .meta-card-title { text-decoration: line-through; }
+  .meta-empty { color: var(--ink-faint); font-size: 14px; text-align: center; padding: 20px 0; }
+  .mentor-ask-btn { width: 100%; margin-top: 4px; padding: 13px; font-size: 15px; }
+  .mentor-output { margin-top: 18px; }
+  .mentor-msg { background: var(--surface-2); border: 1px solid var(--border); border-radius: var(--radius-s); padding: 14px 16px; font-size: 15px; line-height: 1.6; color: var(--ink); animation: slideUp 0.2s ease; }
+  .mentor-msg.mentor-error { color: var(--overdue); border-color: var(--overdue); }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header class="app-header">
+    <h1 id="appTitle">Agenda Vida</h1>
+    <div class="today-date" id="todayDate"></div>
+  </header>
+
+  <div class="utility-bar">
+    <button type="button" class="util-btn" id="exportBtn" title="Baixar backup em JSON">💾 Backup</button>
+    <button type="button" class="util-btn" id="importBtn" title="Restaurar de um backup">📂 Restaurar</button>
+    <input type="file" id="importFile" accept="application/json,.json" style="display:none">
+    <button type="button" class="util-btn" id="alertToggle" title="Ativar alertas sonoros por horário">🔕 Alertas</button>
+    <button type="button" class="util-btn" id="settingsBtn" title="Personalizar aparência">⚙️ Ajustes</button>
+    <button type="button" class="util-btn" id="metasBtn" title="Metas e projetos">🎯 Metas</button>
+    <button type="button" class="util-btn" id="mentorBtn" title="Mentor de produtividade">🧭 Mentor</button>
+    <span class="save-status" id="saveStatus"></span>
+  </div>
+
+  <form class="capture" id="captureForm">
+    <div class="capture-row">
+      <input type="text" id="titleInput" placeholder="O que você precisa lembrar?" autocomplete="off" required>
+      <button type="button" class="mic-btn" id="micBtn" aria-label="Ditar por voz" title="Ditar por voz">🎙️</button>
+      <button type="submit" class="capture-submit" id="submitBtn" aria-label="Adicionar">↵</button>
+    </div>
+    <div class="capture-details-inner">
+      <div class="field-row">
+        <div class="field">
+          <label for="dateInput">📅 Prazo</label>
+          <div class="date-wrap" id="dateWrap"><input type="date" id="dateInput"></div>
+        </div>
+        <div class="field">
+          <label for="timeInput">🕐 Horário</label>
+          <input type="time" id="timeInput">
+        </div>
+      </div>
+      <div class="field-row">
+        <div class="field">
+          <label for="prioritySelect">Prioridade</label>
+          <select id="prioritySelect"></select>
+        </div>
+        <div class="field">
+          <label for="categorySelect">Pilar</label>
+          <select id="categorySelect"></select>
+        </div>
+      </div>
+      <details class="subtask-capture" id="subtaskCapture">
+        <summary>➕ Subtarefas <span id="subtaskSummaryHint"></span></summary>
+        <textarea id="subtasksInput" placeholder="Ex: Lista camisetas&#10;Lista gravatas&#10;Lista placas de nota"></textarea>
+        <p class="field-hint">A tarefa principal só fecha quando todas as subtarefas forem concluídas.</p>
+      </details>
+      <div class="capture-actions" id="captureActions"></div>
+    </div>
+  </form>
+
+  <div class="tabs-row">
+    <div class="tabs" id="tabs">
+      <button class="tab active" data-tab="hoje">Hoje</button>
+      <button class="tab" data-tab="semana">Semana</button>
+      <button class="tab" data-tab="todas">Todas</button>
+    </div>
+    <select id="catFilterSelect" class="cat-filter-select"></select>
+    <button type="button" class="share-btn" id="shareBtn" title="Compartilhar esta lista no WhatsApp">📤</button>
+  </div>
+
+  <div id="taskContainer"></div>
+
+  <footer class="hint">Seus dados ficam salvos neste navegador. Toque em 💾 Backup de vez em quando para guardar uma cópia no seu celular — assim nada se perde.</footer>
+</div>
+
+<div class="settings-overlay" id="settingsOverlay" hidden>
+  <div class="settings-backdrop" id="settingsBackdrop"></div>
+  <div class="settings-panel">
+    <div class="settings-header">
+      <h2>Ajustes de aparência</h2>
+      <button type="button" class="settings-close" id="settingsClose" aria-label="Fechar">×</button>
+    </div>
+    <div class="settings-body">
+
+      <section class="settings-section">
+        <label class="settings-label" for="settingTitle">Nome da agenda</label>
+        <input type="text" id="settingTitle" class="settings-input" maxlength="40" placeholder="Agenda Vida">
+      </section>
+
+      <section class="settings-section">
+        <label class="settings-label">Tema</label>
+        <div class="chip-row" id="themeChips">
+          <button type="button" class="chip" data-theme-choice="dark">🌙 Escuro</button>
+          <button type="button" class="chip" data-theme-choice="light">☀️ Claro</button>
+        </div>
+      </section>
+
+      <section class="settings-section">
+        <label class="settings-label">Cores · <span id="themeColorLabel">modo escuro</span></label>
+        <div class="color-row">
+          <label class="color-field">
+            <span>Destaque</span>
+            <input type="color" id="settingAccent">
+          </label>
+          <label class="color-field">
+            <span>Fundo</span>
+            <input type="color" id="settingBg">
+          </label>
+        </div>
+      </section>
+
+      <section class="settings-section">
+        <label class="settings-label">Fonte</label>
+        <div class="font-grid" id="fontGrid"></div>
+      </section>
+
+      <section class="settings-section">
+        <label class="settings-label">Cores de prioridade</label>
+        <div class="color-row">
+          <label class="color-field"><span>Normal</span><input type="color" id="settingPriNormal"></label>
+          <label class="color-field"><span>Importante</span><input type="color" id="settingPriImportante"></label>
+          <label class="color-field"><span>Urgente</span><input type="color" id="settingPriUrgente"></label>
+        </div>
+      </section>
+
+      <section class="settings-section">
+        <label class="settings-label">Ícones dos pilares</label>
+        <div class="cat-icon-list" id="catIconList"></div>
+      </section>
+
+      <button type="button" class="btn danger settings-reset" id="settingsReset">Restaurar padrão</button>
+    </div>
+  </div>
+</div>
+
+<div class="settings-overlay" id="metasOverlay" hidden>
+  <div class="settings-backdrop" id="metasBackdrop"></div>
+  <div class="settings-panel">
+    <div class="settings-header">
+      <h2>Metas e projetos</h2>
+      <button type="button" class="settings-close" id="metasClose" aria-label="Fechar">×</button>
+    </div>
+    <div class="settings-body">
+      <form id="metaForm" class="settings-section">
+        <input type="text" id="metaTitleInput" class="settings-input" placeholder="Nome da meta ou projeto" required>
+        <select id="metaCategorySelect"></select>
+        <div class="chip-row" id="metaHorizonChips">
+          <button type="button" class="chip" data-horizon="meso">📅 Projeto</button>
+          <button type="button" class="chip" data-horizon="macro">🧭 Visão anual</button>
+        </div>
+        <div class="field">
+          <label for="metaDateInput">Prazo</label>
+          <div class="date-wrap"><input type="date" id="metaDateInput"></div>
+        </div>
+        <div class="field">
+          <label for="metaPercentInput">Conclusão: <span id="metaPercentLabel">0%</span></label>
+          <input type="range" id="metaPercentInput" min="0" max="100" step="5" value="0">
+        </div>
+        <div class="capture-actions" id="metaFormActions">
+          <button type="submit" class="btn primary">Salvar meta</button>
+        </div>
+      </form>
+      <div class="meta-list" id="metaList"></div>
+    </div>
+  </div>
+</div>
+
+<div class="settings-overlay" id="mentorOverlay" hidden>
+  <div class="settings-backdrop" id="mentorBackdrop"></div>
+  <div class="settings-panel">
+    <div class="settings-header">
+      <h2>Mentor de produtividade</h2>
+      <button type="button" class="settings-close" id="mentorClose" aria-label="Fechar">×</button>
+    </div>
+    <div class="settings-body">
+      <p class="field-hint">O mentor olha suas metas e tarefas de agora e te dá um retorno direto — sem elogio vazio, sem só cobrar. Funciona offline, sem depender de internet.</p>
+      <button type="button" class="btn primary mentor-ask-btn" id="mentorAskBtn">Consultar mentor</button>
+      <div id="mentorOutput" class="mentor-output"></div>
+    </div>
+  </div>
+</div>
+
+<script>
+(function(){
+  const STORAGE_KEY = 'agendaVidaTasks_v1';
+  const CATEGORIES = [
+    { id: 'espiritual',      label: 'Espiritual',              color: 'var(--cat-ministerio)', icon: '🙏' },
+    { id: 'familia',         label: 'Família',                 color: 'var(--cat-familia)',    icon: '🏠' },
+    { id: 'trabalho',        label: 'Trabalho',                color: 'var(--cat-trabalho)',   icon: '💼', frentes: [
+        { id: 'dojo',      label: 'Dojô Lótus' },
+        { id: 'campeoes',  label: 'Construindo Campeões' },
+        { id: 'jka',       label: 'JKA Goiás' },
+        { id: 'outro',     label: 'Outro' },
+      ] },
+    { id: 'saude',           label: 'Saúde e Corpo',           color: 'var(--cat-ajuda)',      icon: '💪' },
+    { id: 'desenvolvimento', label: 'Desenvolvimento Pessoal', color: 'var(--cat-pessoal)',    icon: '📈' },
+  ];
+  const CATEGORY_MIGRATION = { organizar: 'trabalho', pessoal: 'desenvolvimento', familia: 'familia', trabalho: 'trabalho', ministerio: 'espiritual', ajuda: 'desenvolvimento' };
+  const CAT_MAP = Object.fromEntries(CATEGORIES.map(c => [c.id, c]));
+  const DEFAULT_SETTINGS = {
+    title: 'Agenda Vida',
+    theme: 'dark',
+    accentDark: '#E8A33D',
+    bgDark: '#10131A',
+    accentLight: '#C6842A',
+    bgLight: '#F5EFE0',
+    font: 'fraunces',
+    priorityColors: { normal: '#8891A3', importante: '#E8A33D', urgente: '#E5544A' },
+    categoryIcons: Object.fromEntries(CATEGORIES.map(c => [c.id, c.icon])),
+  };
+  const FONT_OPTIONS = [
+    { id: 'fraunces',     label: 'Fraunces',      display: "'Fraunces', Georgia, serif",          body: "'Manrope', sans-serif" },
+    { id: 'playfair',     label: 'Playfair',      display: "'Playfair Display', Georgia, serif",  body: "'Inter', sans-serif" },
+    { id: 'merriweather', label: 'Merriweather',  display: "'Merriweather', Georgia, serif",       body: "'Nunito', sans-serif" },
+    { id: 'poppins',      label: 'Poppins',       display: "'Poppins', sans-serif",                body: "'Poppins', sans-serif" },
+    { id: 'inter',        label: 'Inter',         display: "'Inter', sans-serif",                  body: "'Inter', sans-serif" },
+    { id: 'spacegrotesk', label: 'Space Grotesk', display: "'Space Grotesk', sans-serif",           body: "'Manrope', sans-serif" },
+    { id: 'nunito',       label: 'Nunito',        display: "'Nunito', sans-serif",                 body: "'Nunito', sans-serif" },
+    { id: 'manrope',      label: 'Manrope',       display: "'Manrope', sans-serif",                body: "'Manrope', sans-serif" },
+  ];
+  const EMOJI_OPTIONS = ['📋','📌','✅','👤','🏠','👨‍👩‍👧‍👦','💼','📁','🏆','🥋','🎵','🎶','🤝','🙏','⛪','❤️','⭐','🔥','💡','📚','🩺','🛒','✈️','🎯'];
+  const PRIORITIES = [
+    { id: 'normal', label: 'Normal' },
+    { id: 'importante', label: 'Importante' },
+    { id: 'urgente', label: 'Urgente' },
+  ];
+  const PRI_WEIGHT = { urgente: 0, importante: 1, normal: 2 };
+
+  const SETTINGS_KEY = 'agendaVidaSettings_v1';
+  const META_KEY = 'agendaVidaMetas_v1';
+  let state = { tasks: load(), tab: 'hoje', category: null, editingId: null, settings: loadSettings(), metas: loadMetas(), editingMetaId: null };
+  let notificationsEnabled = false;
+
+  function migrateTask(t){
+    const priMap = { baixa: 'normal', media: 'importante', alta: 'urgente' };
+    if(priMap[t.priority]) t.priority = priMap[t.priority];
+    if(!PRI_WEIGHT.hasOwnProperty(t.priority)) t.priority = 'normal';
+    if(!Array.isArray(t.subtasks)) t.subtasks = [];
+    if(t.dueTime === undefined) t.dueTime = null;
+    if(t.alertedAt === undefined) t.alertedAt = null;
+    if(!CAT_MAP[t.category]) t.category = CATEGORY_MIGRATION[t.category] || 'trabalho';
+    if(t.frente === undefined) t.frente = null;
+    if(!t.status) t.status = 'aberta';
+    return t;
+  }
+  function load(){
+    try {
+      const raw = localStorage.getItem(STORAGE_KEY);
+      if(!raw) return [];
+      const data = JSON.parse(raw);
+      return Array.isArray(data) ? data.map(migrateTask) : [];
+    } catch(e){ return []; }
+  }
+  function persist(){
+    try {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(state.tasks));
+      showSaveStatus('Salvo agora');
+    } catch(e){
+      console.error('Falha ao salvar', e);
+      showSaveStatus('Falha ao salvar!');
+    }
+  }
+  function showSaveStatus(msg){
+    const el = document.getElementById('saveStatus');
+    el.textContent = msg;
+    el.classList.add('flash');
+    clearTimeout(showSaveStatus._t);
+    showSaveStatus._t = setTimeout(() => el.classList.remove('flash'), 1400);
+  }
+
+  function loadSettings(){
+    try {
+      const raw = localStorage.getItem(SETTINGS_KEY);
+      const data = raw ? JSON.parse(raw) : {};
+      return {
+        ...DEFAULT_SETTINGS,
+        ...data,
+        priorityColors: { ...DEFAULT_SETTINGS.priorityColors, ...(data.priorityColors||{}) },
+        categoryIcons: { ...DEFAULT_SETTINGS.categoryIcons, ...(data.categoryIcons||{}) },
+      };
+    } catch(e){ return JSON.parse(JSON.stringify(DEFAULT_SETTINGS)); }
+  }
+  function persistSettings(){
+    try {
+      localStorage.setItem(SETTINGS_KEY, JSON.stringify(state.settings));
+      showSaveStatus('Salvo agora');
+    } catch(e){
+      showSaveStatus('Falha ao salvar!');
+    }
+  }
+  function getCatIcon(catId){
+    return (state.settings.categoryIcons && state.settings.categoryIcons[catId]) || (CAT_MAP[catId] && CAT_MAP[catId].icon) || '•';
+  }
+  function applyFont(fontId){
+    const f = FONT_OPTIONS.find(f => f.id === fontId) || FONT_OPTIONS[0];
+    document.documentElement.style.setProperty('--font-display', f.display);
+    document.documentElement.style.setProperty('--font-body', f.body);
+  }
+  function applySettings(){
+    const s = state.settings;
+    const titleText = s.title || 'Agenda Vida';
+    document.title = titleText;
+    const titleEl = document.getElementById('appTitle');
+    if(titleEl) titleEl.textContent = titleText;
+    document.documentElement.setAttribute('data-theme', s.theme);
+    document.documentElement.style.colorScheme = s.theme;
+    const accent = s.theme === 'light' ? s.accentLight : s.accentDark;
+    const bg = s.theme === 'light' ? s.bgLight : s.bgDark;
+    document.documentElement.style.setProperty('--gold', accent);
+    document.documentElement.style.setProperty('--bg', bg);
+    document.documentElement.style.setProperty('--pri-normal', s.priorityColors.normal);
+    document.documentElement.style.setProperty('--pri-importante', s.priorityColors.importante);
+    document.documentElement.style.setProperty('--pri-urgente', s.priorityColors.urgente);
+    applyFont(s.font);
+  }
+
+  function migrateMeta(m){
+    if(!CAT_MAP[m.category]) m.category = 'trabalho';
+    if(m.frente === undefined) m.frente = null;
+    if(m.horizon !== 'macro' && m.horizon !== 'meso') m.horizon = 'meso';
+    if(typeof m.percent !== 'number') m.percent = 0;
+    m.percent = Math.max(0, Math.min(100, m.percent));
+    if(m.statusOverride === undefined) m.statusOverride = null;
+    if(!m.createdAt) m.createdAt = Date.now();
+    if(!m.updatedAt) m.updatedAt = m.createdAt;
+    if(m.alertedAt === undefined) m.alertedAt = null;
+    return m;
+  }
+  function loadMetas(){
+    try {
+      const raw = localStorage.getItem(META_KEY);
+      const list = raw ? JSON.parse(raw) : [];
+      return list.map(migrateMeta);
+    } catch(e){ return []; }
+  }
+  function persistMetas(){
+    try {
+      localStorage.setItem(META_KEY, JSON.stringify(state.metas));
+      showSaveStatus('Salvo agora');
+    } catch(e){
+      showSaveStatus('Falha ao salvar!');
+    }
+  }
+  function metaStatus(m){
+    if(m.statusOverride === 'cancelada') return 'cancelada';
+    if(m.percent >= 100) return 'concluida';
+    if(m.percent > 0) return 'andamento';
+    return 'aberta';
+  }
+  function seedInitialData(){
+    const FLAG = 'agendaVidaSeedV1Applied';
+    if(localStorage.getItem(FLAG)) return;
+    const existingTaskIds = new Set(state.tasks.map(t => t.id));
+    const existingMetaIds = new Set(state.metas.map(m => m.id));
+    const now = Date.now();
+    const seedMetas = [
+      { id: 'seed-inpi', title: 'Regularizar registro da marca no INPI — Dojô Lótus', category: 'trabalho', frente: 'dojo', horizon: 'meso', dueDate: addDaysISO(todayISO(), 30), percent: 0, statusOverride: null, createdAt: now, updatedAt: now, alertedAt: null },
+      { id: 'seed-copajaragua', title: 'Copa Jaraguá — maior evento do ano', category: 'trabalho', frente: 'dojo', horizon: 'macro', dueDate: '2026-11-06', percent: 0, statusOverride: null, createdAt: now, updatedAt: now, alertedAt: null },
+    ];
+    seedMetas.forEach(m => { if(!existingMetaIds.has(m.id)) state.metas.push(m); });
+    const seedTasks = [
+      { id: 'seed-curso-arbitragem', title: 'Curso de arbitragem com o professor — JKA Goiás', category: 'trabalho', frente: 'jka', dueDate: '2026-10-17', dueTime: null, priority: 'importante', status: 'aberta', subtasks: [], completedAt: null, createdAt: now, alertedAt: null },
+      { id: 'seed-materiais-jka', title: 'Materiais pendentes da JKA Goiás', category: 'trabalho', frente: 'jka', dueDate: null, dueTime: null, priority: 'normal', status: 'aberta', subtasks: [
+          { id: 'seed-sub-1', title: 'Imprimir súmulas de kata', done: false },
+          { id: 'seed-sub-2', title: 'Cartões de sorteio', done: false },
+          { id: 'seed-sub-3', title: 'Uniformes de arbitragem (camisa, gravata, calça)', done: false },
+          { id: 'seed-sub-4', title: 'Material de gesticulação', done: false },
+          { id: 'seed-sub-5', title: 'Correção de áudio — pronúncia japonesa', done: false },
+          { id: 'seed-sub-6', title: 'Parceria de vídeos com Sensei Pesana', done: false },
+        ], completedAt: null, createdAt: now, alertedAt: null },
+    ];
+    seedTasks.forEach(t => { if(!existingTaskIds.has(t.id)) state.tasks.push(t); });
+    localStorage.setItem(FLAG, '1');
+    persist();
+    persistMetas();
+  }
+
+  function uid(){ return 't' + Date.now().toString(36) + Math.random().toString(36).slice(2,7); }
+  function todayISO(){
+    const d = new Date();
+    return d.getFullYear() + '-' + String(d.getMonth()+1).padStart(2,'0') + '-' + String(d.getDate()).padStart(2,'0');
+  }
+  function addDaysISO(iso, days){
+    const d = new Date(iso + 'T00:00:00');
+    d.setDate(d.getDate() + days);
+    return d.getFullYear() + '-' + String(d.getMonth()+1).padStart(2,'0') + '-' + String(d.getDate()).padStart(2,'0');
+  }
+  const WEEKDAYS = ['dom','seg','ter','qua','qui','sex','sáb'];
+  function formatDatePt(iso){
+    if(!iso) return '';
+    const d = new Date(iso + 'T00:00:00');
+    return WEEKDAYS[d.getDay()] + ', ' + String(d.getDate()).padStart(2,'0') + '/' + String(d.getMonth()+1).padStart(2,'0');
+  }
+  function escapeHtml(str){
+    const div = document.createElement('div');
+    div.textContent = str;
+    return div.innerHTML;
+  }
+
+  function classify(task){
+    if(task.status === 'cancelada') return 'cancelada';
+    const today = todayISO();
+    if(!task.dueDate) return 'nodate';
+    if(task.dueDate < today) return task.status === 'concluida' ? 'past' : 'overdue';
+    if(task.dueDate === today) return 'today';
+    if(task.dueDate <= addDaysISO(today, 7)) return 'week';
+    return 'later';
+  }
+
+  // ---------- Rendering ----------
+  function renderHeader(){
+    document.getElementById('todayDate').textContent = formatDatePt(todayISO()) + ' · ' + new Date().getFullYear();
+  }
+  function renderCategorySelect(){
+    let html = '';
+    CATEGORIES.forEach(c => {
+      if(c.frentes){
+        html += `<option value="${c.id}">${getCatIcon(c.id)} ${c.label} (geral)</option>` +
+          `<optgroup label="${getCatIcon(c.id)} ${c.label}">` +
+          c.frentes.map(f => `<option value="${c.id}:${f.id}">${f.label}</option>`).join('') +
+          `</optgroup>`;
+      } else {
+        html += `<option value="${c.id}">${getCatIcon(c.id)} ${c.label}</option>`;
+      }
+    });
+    document.getElementById('categorySelect').innerHTML = html;
+  }
+  function renderPrioritySelect(){
+    document.getElementById('prioritySelect').innerHTML = PRIORITIES.map(p => `<option value="${p.id}">${p.label}</option>`).join('');
+  }
+  function renderCatFilterSelect(){
+    let html = `<option value="">🗂️ Todas</option>`;
+    CATEGORIES.forEach(c => { html += `<option value="${c.id}">${getCatIcon(c.id)} ${c.label}</option>`; });
+    document.getElementById('catFilterSelect').innerHTML = html;
+    document.getElementById('catFilterSelect').value = state.category || '';
+  }
+
+  function setCategorySelectValue(categoryId, frenteId){
+    document.getElementById('categorySelect').value = (categoryId === 'trabalho' && frenteId) ? (categoryId + ':' + frenteId) : categoryId;
+  }
+  function getFormCategory(){
+    const val = document.getElementById('categorySelect').value || 'trabalho';
+    return val.split(':')[0];
+  }
+  function getFormFrente(){
+    const val = document.getElementById('categorySelect').value || '';
+    const parts = val.split(':');
+    return parts.length > 1 ? parts[1] : null;
+  }
+  function frenteLabel(id){
+    const f = ((CAT_MAP.trabalho && CAT_MAP.trabalho.frentes) || []).find(f => f.id === id);
+    return f ? f.label : '';
+  }
+  function setPrioritySelectValue(val){
+    document.getElementById('prioritySelect').value = val;
+  }
+  function getFormPriority(){
+    return document.getElementById('prioritySelect').value || 'normal';
+  }
+  function updateSubtaskSummaryHint(){
+    const val = document.getElementById('subtasksInput').value;
+    const count = val.split('\n').map(s => s.trim()).filter(Boolean).length;
+    document.getElementById('subtaskSummaryHint').textContent = count > 0 ? '(' + count + ')' : '';
+  }
+
+  function parseSubtasksInput(text, existingSubtasks){
+    const lines = text.split('\n').map(l => l.trim()).filter(Boolean);
+    const existingByTitle = new Map((existingSubtasks||[]).map(s => [s.title, s]));
+    return lines.map(title => existingByTitle.get(title) || { id: uid(), title, done: false });
+  }
+
+  function resetForm(){
+    document.getElementById('titleInput').value = '';
+    document.getElementById('dateInput').value = '';
+    document.getElementById('timeInput').value = '';
+    document.getElementById('subtasksInput').value = '';
+    document.getElementById('subtaskCapture').open = false;
+    updateSubtaskSummaryHint();
+    setCategorySelectValue('trabalho', null);
+    setPrioritySelectValue('normal');
+    state.editingId = null;
+    document.getElementById('captureActions').innerHTML = '';
+    document.getElementById('submitBtn').textContent = '↵';
+    document.getElementById('submitBtn').setAttribute('aria-label', 'Adicionar');
+  }
+
+  function startEdit(task){
+    state.editingId = task.id;
+    document.getElementById('titleInput').value = task.title;
+    document.getElementById('dateInput').value = task.dueDate || '';
+    document.getElementById('timeInput').value = task.dueTime || '';
+    document.getElementById('subtasksInput').value = (task.subtasks||[]).map(s => s.title).join('\n');
+    document.getElementById('subtaskCapture').open = (task.subtasks||[]).length > 0;
+    updateSubtaskSummaryHint();
+    setCategorySelectValue(task.category, task.frente);
+    setPrioritySelectValue(task.priority || 'normal');
+    document.getElementById('captureActions').innerHTML = `
+      <button type="button" class="btn danger" id="deleteBtn">Excluir</button>
+      <button type="button" class="btn" id="giveUpBtn">Desistir</button>
+      <button type="button" class="btn" id="cancelBtn">Fechar</button>`;
+    document.getElementById('submitBtn').textContent = '✓';
+    document.getElementById('submitBtn').setAttribute('aria-label', 'Salvar alterações');
+    document.getElementById('deleteBtn').onclick = () => {
+      state.tasks = state.tasks.filter(t => t.id !== task.id);
+      persist(); resetForm(); renderAll();
+    };
+    document.getElementById('giveUpBtn').onclick = () => {
+      task.status = 'cancelada'; task.completedAt = null;
+      persist(); resetForm(); renderAll();
+    };
+    document.getElementById('cancelBtn').onclick = () => resetForm();
+    document.getElementById('titleInput').focus();
+    const formEl = document.getElementById('captureForm');
+    if(formEl.scrollIntoView) formEl.scrollIntoView({behavior:'smooth', block:'start'});
+  }
+
+  function filteredTasks(){
+    let list = state.tasks.slice();
+    if(state.category) list = list.filter(t => t.category === state.category);
+    if(state.tab === 'hoje'){
+      list = list.filter(t => ['overdue','today'].includes(classify(t)));
+    } else if(state.tab === 'semana'){
+      list = list.filter(t => ['overdue','today','week'].includes(classify(t)));
+    }
+    return list;
+  }
+  function sortTasks(list){
+    return list.sort((a,b) => {
+      if(a.status !== b.status) return a.status === 'concluida' ? 1 : -1;
+      const da = a.dueDate || '9999-99-99', db = b.dueDate || '9999-99-99';
+      if(da !== db) return da < db ? -1 : 1;
+      return (PRI_WEIGHT[a.priority] ?? 2) - (PRI_WEIGHT[b.priority] ?? 2);
+    });
+  }
+
+  function subtasksHtml(task){
+    if(!task.subtasks || !task.subtasks.length) return '';
+    const doneCount = task.subtasks.filter(s => s.done).length;
+    const items = task.subtasks.map(s => `
+      <div class="subtask ${s.done?'done':''}" data-action="toggleSubtask" data-id="${task.id}" data-subid="${s.id}">
+        <div class="sub-checkbox"></div><span class="sub-title">${escapeHtml(s.title)}</span>
+      </div>`).join('');
+    return `
+      <details class="subtask-details">
+        <summary data-action="noop">${doneCount}/${task.subtasks.length} subtarefas</summary>
+        <div class="subtask-list">${items}</div>
+      </details>`;
+  }
+
+  function taskCardHtml(task){
+    const cat = CAT_MAP[task.category] || CAT_MAP.trabalho;
+    const cls = classify(task);
+    const isOverdue = cls === 'overdue';
+    const isDone = task.status === 'concluida';
+    const isCancelada = task.status === 'cancelada';
+    const isUntriaged = !!cat.dash;
+    const dateLabel = task.dueDate
+      ? formatDatePt(task.dueDate) + (task.dueTime ? ' · ' + task.dueTime : '')
+      : (isUntriaged ? 'sem prazo · toque para organizar' : 'sem prazo');
+    return `
+      <div class="task ${isOverdue?'overdue':''} ${isDone?'done':''} ${isCancelada?'cancelada':''} ${isUntriaged?'untriaged':''}" data-id="${task.id}" style="--cat-color:${cat.color}">
+        <div class="checkbox" data-action="toggle" data-id="${task.id}">
+          <svg viewBox="0 0 24 24" fill="none"><path d="M5 13l4 4L19 7" stroke="#1A1206" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </div>
+        <div class="task-body" data-action="edit" data-id="${task.id}">
+          <div class="task-title">${escapeHtml(task.title)}</div>
+          <div class="task-meta">
+            <span class="task-cat"><span class="cat-icon">${getCatIcon(task.category)}</span>${cat.label}${task.frente ? ' · ' + frenteLabel(task.frente) : ''}</span>
+            <span class="task-date">${isOverdue ? '⚠ atrasada · ' : ''}${isCancelada ? 'desistida' : dateLabel}</span>
+            ${task.priority==='urgente' && !isDone && !isCancelada ? '<span class="flag-pri urgente">● urgente</span>' : ''}
+            ${task.priority==='importante' && !isDone && !isCancelada ? '<span class="flag-pri importante">● importante</span>' : ''}
+          </div>
+          ${subtasksHtml(task)}
+        </div>
+        <button class="task-del" data-action="delete" data-id="${task.id}" aria-label="Excluir">×</button>
+      </div>`;
+  }
+
+  function renderTasks(){
+    const container = document.getElementById('taskContainer');
+    const list = sortTasks(filteredTasks());
+    if(list.length === 0){
+      const msgs = {
+        hoje: ['Nada pendente para hoje.', 'Use o campo acima para adicionar um compromisso, ou aproveite — está tudo em dia.'],
+        semana: ['Semana livre por aqui.', 'Nada agendado para os próximos 7 dias.'],
+        todas: ['Ainda não há nada por aqui.', 'Preencha o campo acima e comece a colocar tudo para fora da cabeça.'],
+      };
+      const [title, sub] = msgs[state.tab] || msgs.todas;
+      container.innerHTML = `<div class="empty"><strong>${title}</strong>${sub}</div>`;
+      return;
+    }
+    if(state.tab === 'todas'){
+      const buckets = { overdue: [], today: [], week: [], later: [], nodate: [], past: [], cancelada: [] };
+      list.forEach(t => buckets[classify(t)].push(t));
+      const order = [
+        ['overdue','Atrasadas'], ['today','Hoje'], ['week','Esta semana'],
+        ['later','Mais adiante'], ['nodate','Sem prazo'], ['past','Concluídas'], ['cancelada','Desistidas'],
+      ];
+      container.innerHTML = order.filter(([k]) => buckets[k].length).map(([k,label]) => `
+        <div class="group">
+          <div class="group-title">${label} <span class="count">· ${buckets[k].length}</span></div>
+          ${buckets[k].map(taskCardHtml).join('')}
+        </div>`).join('');
+    } else {
+      container.innerHTML = list.map(taskCardHtml).join('');
+    }
+  }
+  function renderAll(){ renderHeader(); renderTasks(); }
+
+  // ---------- Backup ----------
+  function exportBackup(){
+    const data = JSON.stringify({ tasks: state.tasks, metas: state.metas }, null, 2);
+    const blob = new Blob([data], {type: 'application/json'});
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = 'agenda-vida-backup-' + todayISO() + '.json';
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+    showSaveStatus('Backup baixado');
+  }
+  function importBackup(file){
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      try {
+        const data = JSON.parse(e.target.result);
+        let tasksData, metasData;
+        if(Array.isArray(data)){
+          tasksData = data;
+          metasData = [];
+        } else if(data && typeof data === 'object'){
+          tasksData = Array.isArray(data.tasks) ? data.tasks : [];
+          metasData = Array.isArray(data.metas) ? data.metas : [];
+        } else {
+          throw new Error('formato inválido');
+        }
+        const total = tasksData.length + metasData.length;
+        if(!confirm('Isso vai substituir suas tarefas e metas atuais pelas do backup (' + total + ' itens). Continuar?')) return;
+        state.tasks = tasksData.map(migrateTask);
+        state.metas = metasData.map(migrateMeta);
+        persist();
+        persistMetas();
+        renderAll();
+        showSaveStatus('Backup restaurado');
+      } catch(err){
+        alert('Não foi possível ler esse arquivo de backup.');
+      }
+    };
+    reader.readAsText(file);
+  }
+
+  // ---------- Alerts ----------
+  function beep(){
+    try {
+      const ctx = new (window.AudioContext || window.webkitAudioContext)();
+      const osc = ctx.createOscillator();
+      const gain = ctx.createGain();
+      osc.connect(gain); gain.connect(ctx.destination);
+      osc.frequency.value = 880;
+      gain.gain.setValueAtTime(0.15, ctx.currentTime);
+      osc.start();
+      osc.stop(ctx.currentTime + 0.4);
+    } catch(e){}
+  }
+  function initVoiceCapture(){
+    const micBtn = document.getElementById('micBtn');
+    if(!window.isSecureContext){
+      micBtn.addEventListener('click', () => {
+        alert('O ditado por voz só funciona em páginas com https, por segurança do navegador. Como esse arquivo é aberto direto do celular, o microfone fica bloqueado — dá pra digitar normalmente. Se quiser mesmo usar o ditado, dá pra hospedar esse arquivo num link https; me chama que eu te explico como.');
+      });
+      return;
+    }
+    const SpeechRec = window.SpeechRecognition || window.webkitSpeechRecognition;
+    if(!SpeechRec){
+      micBtn.addEventListener('click', () => {
+        alert('Seu navegador não tem suporte a ditado por voz aqui. Pode digitar normalmente.');
+      });
+      return;
+    }
+    const recognition = new SpeechRec();
+    recognition.lang = 'pt-BR';
+    recognition.continuous = false;
+    recognition.interimResults = true;
+    let listening = false;
+    recognition.onresult = (e) => {
+      let text = '';
+      for(let i = 0; i < e.results.length; i++){ text += e.results[i][0].transcript; }
+      document.getElementById('titleInput').value = text;
+    };
+    recognition.onend = () => {
+      listening = false;
+      micBtn.classList.remove('listening');
+    };
+    recognition.onerror = (e) => {
+      listening = false;
+      micBtn.classList.remove('listening');
+      if(e.error === 'not-allowed'){
+        alert('Permissão de microfone negada. Ative o microfone nas configurações do navegador pra usar o ditado.');
+      } else if(e.error === 'network'){
+        alert('O ditado por voz precisa de internet. Sem sinal agora — digite sua ideia, ela salva do mesmo jeito.');
+      }
+    };
+    micBtn.addEventListener('click', () => {
+      if(listening){ recognition.stop(); return; }
+      if(!navigator.onLine){
+        alert('O ditado por voz precisa de internet. Sem sinal agora — digite sua ideia, ela salva do mesmo jeito.');
+        return;
+      }
+      document.getElementById('titleInput').value = '';
+      listening = true;
+      micBtn.classList.add('listening');
+      try { recognition.start(); } catch(e){ listening = false; micBtn.classList.remove('listening'); }
+    });
+  }
+  function updateAlertBtn(){
+    const btn = document.getElementById('alertToggle');
+    btn.textContent = notificationsEnabled ? '🔔 Alertas ativos' : '🔕 Alertas';
+    btn.classList.toggle('active', notificationsEnabled);
+  }
+  function checkAlerts(){
+    if(!notificationsEnabled) return;
+    const today = todayISO();
+    const now = new Date();
+    const nowHM = String(now.getHours()).padStart(2,'0') + ':' + String(now.getMinutes()).padStart(2,'0');
+    let changed = false;
+    state.tasks.forEach(t => {
+      if(t.status === 'concluida' || t.dueDate !== today || !t.dueTime || t.alertedAt === today) return;
+      if(t.dueTime <= nowHM){
+        try { new Notification('Agenda Vida', { body: t.title + ' · ' + t.dueTime }); } catch(e){}
+        beep();
+        t.alertedAt = today;
+        changed = true;
+      }
+    });
+    if(changed) persist();
+    let metasChanged = false;
+    state.metas.forEach(m => {
+      const st = metaStatus(m);
+      if(st === 'concluida' || st === 'cancelada' || !m.dueDate || m.alertedAt === today) return;
+      if(m.dueDate <= today){
+        const label = m.dueDate === today ? 'vence hoje' : 'prazo vencido';
+        try { new Notification('Agenda Vida · Meta', { body: m.title + ' — ' + label }); } catch(e){}
+        beep();
+        m.alertedAt = today;
+        metasChanged = true;
+      }
+    });
+    if(metasChanged) persistMetas();
+  }
+  function initAlerts(){
+    if('Notification' in window && Notification.permission === 'granted') notificationsEnabled = true;
+    updateAlertBtn();
+    document.getElementById('alertToggle').addEventListener('click', async () => {
+      if(!('Notification' in window)){ alert('Este navegador não tem suporte a notificações.'); return; }
+      if(Notification.permission === 'denied'){ alert('As notificações foram bloqueadas para este site. Ative nas configurações do navegador para receber alertas.'); return; }
+      if(Notification.permission === 'granted'){
+        notificationsEnabled = !notificationsEnabled;
+      } else {
+        const perm = await Notification.requestPermission();
+        notificationsEnabled = perm === 'granted';
+      }
+      updateAlertBtn();
+    });
+    setInterval(checkAlerts, 30000);
+  }
+
+  // ---------- Share ----------
+  function shareCurrentView(){
+    const list = sortTasks(filteredTasks());
+    if(!list.length){ alert('Nada para compartilhar nessa visão.'); return; }
+    const tabLabel = {hoje:'Hoje', semana:'Esta semana', todas:'Todas'}[state.tab];
+    let text = '*Agenda Vida — ' + tabLabel + '*\n' + formatDatePt(todayISO()) + '\n\n';
+    list.forEach(t => {
+      const mark = t.status === 'concluida' ? '✅' : '▫️';
+      const when = t.dueDate ? formatDatePt(t.dueDate) + (t.dueTime ? ' ' + t.dueTime : '') : 'sem prazo';
+      text += mark + ' ' + t.title + ' — ' + when + '\n';
+    });
+    window.open('https://wa.me/?text=' + encodeURIComponent(text), '_blank');
+  }
+
+  // ---------- Metas UI ----------
+  function renderMetaCategorySelect(){
+    let html = '';
+    CATEGORIES.forEach(c => {
+      if(c.frentes){
+        html += `<option value="${c.id}">${getCatIcon(c.id)} ${c.label} (geral)</option>` +
+          `<optgroup label="${getCatIcon(c.id)} ${c.label}">` +
+          c.frentes.map(f => `<option value="${c.id}:${f.id}">${f.label}</option>`).join('') +
+          `</optgroup>`;
+      } else {
+        html += `<option value="${c.id}">${getCatIcon(c.id)} ${c.label}</option>`;
+      }
+    });
+    document.getElementById('metaCategorySelect').innerHTML = html;
+  }
+  function setMetaCategorySelectValue(categoryId, frenteId){
+    document.getElementById('metaCategorySelect').value = (categoryId === 'trabalho' && frenteId) ? (categoryId + ':' + frenteId) : categoryId;
+  }
+  function getMetaFormCategory(){
+    const val = document.getElementById('metaCategorySelect').value || 'trabalho';
+    return val.split(':')[0];
+  }
+  function getMetaFormFrente(){
+    const val = document.getElementById('metaCategorySelect').value || '';
+    const parts = val.split(':');
+    return parts.length > 1 ? parts[1] : null;
+  }
+  function selectMetaHorizonChip(val){
+    document.querySelectorAll('#metaHorizonChips .chip').forEach(el => el.classList.toggle('active', el.dataset.horizon === val));
+  }
+  function getMetaFormHorizon(){
+    const active = document.querySelector('#metaHorizonChips .chip.active');
+    return active ? active.dataset.horizon : 'meso';
+  }
+  function metaCardHtml(m){
+    const cat = CAT_MAP[m.category] || CAT_MAP.trabalho;
+    const st = metaStatus(m);
+    const today = todayISO();
+    let dueLabel = 'sem prazo';
+    if(m.dueDate){
+      if(st === 'concluida' || st === 'cancelada'){
+        dueLabel = formatDatePt(m.dueDate);
+      } else {
+        const days = Math.round((new Date(m.dueDate + 'T00:00:00') - new Date(today + 'T00:00:00')) / 86400000);
+        if(days < 0) dueLabel = '⚠ venceu · ' + formatDatePt(m.dueDate);
+        else if(days === 0) dueLabel = 'vence hoje';
+        else dueLabel = days + 'd restantes · ' + formatDatePt(m.dueDate);
+      }
+    }
+    const statusLabel = { aberta:'não iniciada', andamento:'em andamento', concluida:'concluída', cancelada:'desistida' }[st];
+    return `
+      <div class="meta-card ${st}" data-id="${m.id}" style="--cat-color:${cat.color}">
+        <div class="meta-card-top" data-action="editMeta" data-id="${m.id}">
+          <span class="task-cat"><span class="cat-icon">${getCatIcon(m.category)}</span>${cat.label}${m.frente ? ' · ' + frenteLabel(m.frente) : ''}</span>
+          <span>${m.horizon === 'macro' ? '🧭 visão anual' : '📅 projeto'}</span>
+        </div>
+        <div class="meta-card-title" data-action="editMeta" data-id="${m.id}">${escapeHtml(m.title)}</div>
+        <div class="meta-progress"><div class="meta-progress-fill" style="width:${m.percent}%"></div></div>
+        <div class="meta-card-meta">
+          <span>${m.percent}% · ${statusLabel}</span>
+          <span>${dueLabel}</span>
+        </div>
+      </div>`;
+  }
+  function renderMetaList(){
+    const rank = { aberta: 0, andamento: 0, concluida: 1, cancelada: 2 };
+    const list = state.metas.slice().sort((a, b) => {
+      const ra = rank[metaStatus(a)], rb = rank[metaStatus(b)];
+      if(ra !== rb) return ra - rb;
+      if(!a.dueDate && !b.dueDate) return 0;
+      if(!a.dueDate) return 1;
+      if(!b.dueDate) return -1;
+      return a.dueDate.localeCompare(b.dueDate);
+    });
+    const container = document.getElementById('metaList');
+    if(!list.length){
+      container.innerHTML = '<div class="meta-empty">Nenhuma meta ainda. Cadastre seus projetos e metas acima.</div>';
+      return;
+    }
+    container.innerHTML = list.map(metaCardHtml).join('');
+  }
+  function resetMetaForm(){
+    state.editingMetaId = null;
+    document.getElementById('metaTitleInput').value = '';
+    document.getElementById('metaDateInput').value = '';
+    document.getElementById('metaPercentInput').value = 0;
+    document.getElementById('metaPercentLabel').textContent = '0%';
+    setMetaCategorySelectValue('trabalho', null);
+    selectMetaHorizonChip('meso');
+    document.getElementById('metaFormActions').innerHTML = '<button type="submit" class="btn primary">Salvar meta</button>';
+  }
+  function startEditMeta(meta){
+    state.editingMetaId = meta.id;
+    document.getElementById('metaTitleInput').value = meta.title;
+    setMetaCategorySelectValue(meta.category, meta.frente);
+    selectMetaHorizonChip(meta.horizon);
+    document.getElementById('metaDateInput').value = meta.dueDate || '';
+    document.getElementById('metaPercentInput').value = meta.percent;
+    document.getElementById('metaPercentLabel').textContent = meta.percent + '%';
+    document.getElementById('metaFormActions').innerHTML = `
+      <button type="submit" class="btn primary">Salvar meta</button>
+      <button type="button" class="btn danger" id="metaDeleteBtn">Excluir</button>
+      <button type="button" class="btn" id="metaGiveUpBtn">Desistir</button>
+      <button type="button" class="btn" id="metaCancelEditBtn">Fechar</button>`;
+    document.getElementById('metaDeleteBtn').onclick = () => {
+      state.metas = state.metas.filter(x => x.id !== meta.id);
+      persistMetas(); resetMetaForm(); renderMetaList();
+    };
+    document.getElementById('metaGiveUpBtn').onclick = () => {
+      meta.statusOverride = 'cancelada'; meta.updatedAt = Date.now();
+      persistMetas(); resetMetaForm(); renderMetaList();
+    };
+    document.getElementById('metaCancelEditBtn').onclick = () => resetMetaForm();
+    document.getElementById('metaTitleInput').focus();
+  }
+  function openMetas(){
+    renderMetaCategorySelect();
+    resetMetaForm();
+    renderMetaList();
+    document.getElementById('metasOverlay').hidden = false;
+  }
+  function closeMetas(){
+    document.getElementById('metasOverlay').hidden = true;
+  }
+  document.getElementById('metasBtn').addEventListener('click', openMetas);
+  document.getElementById('metasClose').addEventListener('click', closeMetas);
+  document.getElementById('metasBackdrop').addEventListener('click', closeMetas);
+  document.getElementById('metaHorizonChips').addEventListener('click', (e) => {
+    const chip = e.target.closest('.chip');
+    if(chip) selectMetaHorizonChip(chip.dataset.horizon);
+  });
+  document.getElementById('metaPercentInput').addEventListener('input', (e) => {
+    document.getElementById('metaPercentLabel').textContent = e.target.value + '%';
+  });
+  document.getElementById('metaList').addEventListener('click', (e) => {
+    const el = e.target.closest('[data-action="editMeta"]');
+    if(!el) return;
+    const meta = state.metas.find(m => m.id === el.dataset.id);
+    if(meta) startEditMeta(meta);
+  });
+  document.getElementById('metaForm').addEventListener('submit', (e) => {
+    e.preventDefault();
+    const title = document.getElementById('metaTitleInput').value.trim();
+    if(!title) return;
+    const percent = Number(document.getElementById('metaPercentInput').value) || 0;
+    const category = getMetaFormCategory();
+    const frente = category === 'trabalho' ? getMetaFormFrente() : null;
+    const horizon = getMetaFormHorizon();
+    const dueDate = document.getElementById('metaDateInput').value || null;
+    if(state.editingMetaId){
+      const m = state.metas.find(x => x.id === state.editingMetaId);
+      if(m){
+        m.title = title; m.category = category; m.frente = frente; m.horizon = horizon;
+        m.dueDate = dueDate; m.percent = percent; m.statusOverride = null; m.updatedAt = Date.now();
+      }
+    } else {
+      state.metas.push({
+        id: uid(), title, category, frente, horizon, dueDate, percent,
+        statusOverride: null, createdAt: Date.now(), updatedAt: Date.now(), alertedAt: null,
+      });
+    }
+    persistMetas();
+    resetMetaForm();
+    renderMetaList();
+  });
+
+  // ---------- Mentor ----------
+  function generateMentorMessage(){
+    const today = todayISO();
+    const activeTasks = state.tasks.filter(t => t.status !== 'cancelada');
+    const overdueTasks = activeTasks.filter(t => classify(t) === 'overdue');
+    const activeMetas = state.metas.filter(m => { const s = metaStatus(m); return s !== 'concluida' && s !== 'cancelada'; });
+    const overdueMetas = activeMetas.filter(m => m.dueDate && m.dueDate < today);
+    const dueSoonMetas = activeMetas.filter(m => {
+      if(!m.dueDate || m.dueDate < today) return false;
+      const days = Math.round((new Date(m.dueDate + 'T00:00:00') - new Date(today + 'T00:00:00')) / 86400000);
+      return days <= 7;
+    });
+    const staleMetas = activeMetas.filter(m => Math.round((Date.now() - m.updatedAt) / 86400000) >= 14);
+    const recentlyCompleted = state.tasks.filter(t => t.status === 'concluida' && t.completedAt && (Date.now() - t.completedAt) < 7 * 86400000).length;
+    const openByPillar = {};
+    CATEGORIES.forEach(c => { openByPillar[c.id] = activeTasks.filter(t => t.category === c.id && t.status !== 'concluida').length; });
+    const busiest = Object.entries(openByPillar).sort((a, b) => b[1] - a[1])[0];
+
+    const lines = [];
+    if(overdueTasks.length >= 3){
+      lines.push('Você tem ' + overdueTasks.length + ' tarefas atrasadas agora. Isso costuma ser sinal de frente demais aberta ao mesmo tempo — escolhe 1 ou 2 pra fechar hoje antes de abrir qualquer coisa nova.');
+    } else if(overdueTasks.length > 0){
+      lines.push(overdueTasks.length + ' tarefa(s) atrasada(s), entre elas "' + overdueTasks[0].title + '". Nada grave ainda, mas não deixa acumular.');
+    }
+    if(overdueMetas.length){
+      lines.push('A meta "' + overdueMetas[0].title + '" passou do prazo. Ou você atualiza a data, ou marca como desistida — deixar parada sem decisão é o padrão que mais te atrapalha.');
+    }
+    if(staleMetas.length && lines.length < 3){
+      lines.push('"' + staleMetas[0].title + '" está sem atualização há mais de 2 semanas. Ainda é prioridade, ou já esfriou?');
+    }
+    if(dueSoonMetas.length && lines.length < 3){
+      const m = dueSoonMetas[0];
+      lines.push('"' + m.title + '" vence em breve e está em ' + m.percent + '%. ' + (m.percent < 50 ? 'Vale revisar se o prazo ainda é realista.' : 'Está no caminho, continua.'));
+    }
+    if(recentlyCompleted > 0 && lines.length < 2){
+      lines.push('Você fechou ' + recentlyCompleted + ' tarefa(s) essa semana — ritmo de quem termina, não só começa.');
+    }
+    if(lines.length === 0){
+      lines.push('Nada atrasado, nada parado. Se não tem urgência agora, é um bom momento pra avançar uma meta de longo prazo em vez de só apagar incêndio.');
+    }
+    if(busiest && busiest[1] >= 4){
+      lines.push((CAT_MAP[busiest[0]] || {}).label + ' concentra ' + busiest[1] + ' tarefas em aberto — o maior volume dos seus pilares agora.');
+    }
+    return lines.join(' ');
+  }
+  function consultMentor(){
+    const output = document.getElementById('mentorOutput');
+    const message = generateMentorMessage();
+    output.innerHTML = '<div class="mentor-msg">' + escapeHtml(message) + '</div>';
+  }
+  document.getElementById('mentorBtn').addEventListener('click', () => {
+    consultMentor();
+    document.getElementById('mentorOverlay').hidden = false;
+  });
+  document.getElementById('mentorClose').addEventListener('click', () => { document.getElementById('mentorOverlay').hidden = true; });
+  document.getElementById('mentorBackdrop').addEventListener('click', () => { document.getElementById('mentorOverlay').hidden = true; });
+  document.getElementById('mentorAskBtn').addEventListener('click', consultMentor);
+
+  // ---------- Settings UI ----------
+  function updateThemeChipsUI(){
+    document.querySelectorAll('#themeChips .chip').forEach(el => {
+      el.classList.toggle('active', el.dataset.themeChoice === state.settings.theme);
+    });
+    document.getElementById('themeColorLabel').textContent = state.settings.theme === 'light' ? 'modo claro' : 'modo escuro';
+  }
+  function updateColorInputsUI(){
+    const s = state.settings;
+    document.getElementById('settingAccent').value = s.theme === 'light' ? s.accentLight : s.accentDark;
+    document.getElementById('settingBg').value = s.theme === 'light' ? s.bgLight : s.bgDark;
+  }
+  function updatePriorityColorInputsUI(){
+    document.getElementById('settingPriNormal').value = state.settings.priorityColors.normal;
+    document.getElementById('settingPriImportante').value = state.settings.priorityColors.importante;
+    document.getElementById('settingPriUrgente').value = state.settings.priorityColors.urgente;
+  }
+  function renderFontGrid(){
+    document.getElementById('fontGrid').innerHTML = FONT_OPTIONS.map(f => `
+      <button type="button" class="font-chip ${state.settings.font===f.id?'active':''}" data-font="${f.id}" style="font-family:${f.display}">
+        Aa <span class="font-chip-label">${f.label}</span>
+      </button>`).join('');
+  }
+  function renderCatIconList(){
+    document.getElementById('catIconList').innerHTML = CATEGORIES.map(c => `
+      <div>
+        <div class="cat-icon-row">
+          <span class="cat-icon-row-label"><span class="settings-dot" style="--dot:${c.color}"></span>${c.label}</span>
+          <button type="button" class="cat-icon-btn" data-catid="${c.id}">${getCatIcon(c.id)}</button>
+        </div>
+        <div class="emoji-grid" data-catid="${c.id}" hidden>
+          ${EMOJI_OPTIONS.map(e => `<button type="button" class="emoji-btn" data-catid="${c.id}" data-emoji="${e}">${e}</button>`).join('')}
+        </div>
+      </div>`).join('');
+  }
+  function refreshCategoryDisplays(){
+    const formCat = getFormCategory();
+    const formFrente = getFormFrente();
+    renderCategorySelect();
+    setCategorySelectValue(formCat, formFrente);
+    renderCatFilterSelect();
+    renderTasks();
+  }
+  function populateSettingsPanel(){
+    document.getElementById('settingTitle').value = state.settings.title;
+    updateThemeChipsUI();
+    updateColorInputsUI();
+    renderFontGrid();
+    updatePriorityColorInputsUI();
+    renderCatIconList();
+  }
+  function openSettings(){
+    populateSettingsPanel();
+    document.getElementById('settingsOverlay').hidden = false;
+  }
+  function closeSettings(){
+    document.getElementById('settingsOverlay').hidden = true;
+  }
+  document.getElementById('settingsBtn').addEventListener('click', openSettings);
+  document.getElementById('settingsClose').addEventListener('click', closeSettings);
+  document.getElementById('settingsBackdrop').addEventListener('click', closeSettings);
+  document.getElementById('settingTitle').addEventListener('input', (e) => {
+    state.settings.title = e.target.value;
+    persistSettings();
+    applySettings();
+  });
+  document.getElementById('themeChips').addEventListener('click', (e) => {
+    const chip = e.target.closest('.chip');
+    if(!chip) return;
+    state.settings.theme = chip.dataset.themeChoice;
+    persistSettings();
+    applySettings();
+    updateThemeChipsUI();
+    updateColorInputsUI();
+  });
+  document.getElementById('settingAccent').addEventListener('input', (e) => {
+    if(state.settings.theme === 'light') state.settings.accentLight = e.target.value;
+    else state.settings.accentDark = e.target.value;
+    persistSettings();
+    applySettings();
+  });
+  document.getElementById('settingBg').addEventListener('input', (e) => {
+    if(state.settings.theme === 'light') state.settings.bgLight = e.target.value;
+    else state.settings.bgDark = e.target.value;
+    persistSettings();
+    applySettings();
+  });
+  document.getElementById('fontGrid').addEventListener('click', (e) => {
+    const chip = e.target.closest('.font-chip');
+    if(!chip) return;
+    state.settings.font = chip.dataset.font;
+    persistSettings();
+    applySettings();
+    renderFontGrid();
+  });
+  document.getElementById('settingPriNormal').addEventListener('input', (e) => {
+    state.settings.priorityColors.normal = e.target.value;
+    persistSettings(); applySettings();
+  });
+  document.getElementById('settingPriImportante').addEventListener('input', (e) => {
+    state.settings.priorityColors.importante = e.target.value;
+    persistSettings(); applySettings();
+  });
+  document.getElementById('settingPriUrgente').addEventListener('input', (e) => {
+    state.settings.priorityColors.urgente = e.target.value;
+    persistSettings(); applySettings();
+  });
+  document.getElementById('catIconList').addEventListener('click', (e) => {
+    const emojiBtn = e.target.closest('.emoji-btn');
+    if(emojiBtn){
+      state.settings.categoryIcons[emojiBtn.dataset.catid] = emojiBtn.dataset.emoji;
+      persistSettings();
+      refreshCategoryDisplays();
+      renderCatIconList();
+      return;
+    }
+    const iconBtn = e.target.closest('.cat-icon-btn');
+    if(iconBtn){
+      const grid = document.querySelector('.emoji-grid[data-catid="' + iconBtn.dataset.catid + '"]');
+      const wasOpen = grid && !grid.hidden;
+      document.querySelectorAll('.emoji-grid').forEach(g => g.hidden = true);
+      if(grid) grid.hidden = wasOpen;
+    }
+  });
+  document.getElementById('settingsReset').addEventListener('click', () => {
+    if(!confirm('Isso vai restaurar cores, fonte e ícones para o padrão original. Continuar?')) return;
+    state.settings = JSON.parse(JSON.stringify(DEFAULT_SETTINGS));
+    persistSettings();
+    applySettings();
+    refreshCategoryDisplays();
+    populateSettingsPanel();
+  });
+
+  // ---------- Events ----------
+  document.getElementById('subtasksInput').addEventListener('input', updateSubtaskSummaryHint);
+  document.getElementById('dateWrap').addEventListener('click', () => {
+    const input = document.getElementById('dateInput');
+    try { input.showPicker(); } catch(e){ input.focus(); }
+  });
+  document.getElementById('catFilterSelect').addEventListener('change', (e) => {
+    state.category = e.target.value || null;
+    renderTasks();
+  });
+  document.getElementById('tabs').addEventListener('click', (e) => {
+    const tab = e.target.closest('.tab');
+    if(!tab) return;
+    state.tab = tab.dataset.tab;
+    document.querySelectorAll('.tab').forEach(t => t.classList.toggle('active', t===tab));
+    renderTasks();
+  });
+  document.getElementById('shareBtn').addEventListener('click', shareCurrentView);
+  document.getElementById('exportBtn').addEventListener('click', exportBackup);
+  document.getElementById('importBtn').addEventListener('click', () => document.getElementById('importFile').click());
+  document.getElementById('importFile').addEventListener('change', (e) => {
+    if(e.target.files[0]) importBackup(e.target.files[0]);
+    e.target.value = '';
+  });
+
+  document.getElementById('captureForm').addEventListener('submit', (e) => {
+    e.preventDefault();
+    const title = document.getElementById('titleInput').value.trim();
+    if(!title) return;
+    const existingTask = state.editingId ? state.tasks.find(t => t.id === state.editingId) : null;
+    const data = {
+      title,
+      category: getFormCategory(),
+      frente: getFormCategory() === 'trabalho' ? getFormFrente() : null,
+      dueDate: document.getElementById('dateInput').value || null,
+      dueTime: document.getElementById('timeInput').value || null,
+      priority: getFormPriority(),
+      subtasks: parseSubtasksInput(document.getElementById('subtasksInput').value, existingTask ? existingTask.subtasks : []),
+    };
+    if(existingTask){
+      Object.assign(existingTask, data);
+    } else {
+      state.tasks.push({ id: uid(), status: 'aberta', createdAt: Date.now(), alertedAt: null, ...data });
+    }
+    persist();
+    resetForm();
+    renderAll();
+  });
+
+  document.getElementById('taskContainer').addEventListener('click', (e) => {
+    const el = e.target.closest('[data-action]');
+    if(!el) return;
+    const task = state.tasks.find(t => t.id === el.dataset.id);
+    if(!task) return;
+    const action = el.dataset.action;
+    if(action === 'toggle'){
+      if(task.status === 'cancelada'){
+        task.status = 'aberta';
+        persist(); renderTasks();
+        return;
+      }
+      const hasOpenSubtasks = task.subtasks && task.subtasks.length && !task.subtasks.every(s => s.done);
+      if(hasOpenSubtasks && task.status !== 'concluida'){
+        const details = document.querySelector('.task[data-id="' + task.id + '"] .subtask-details');
+        if(details) details.open = true;
+        return;
+      }
+      task.status = task.status === 'concluida' ? 'aberta' : 'concluida';
+      task.completedAt = task.status === 'concluida' ? Date.now() : null;
+      persist(); renderTasks();
+    } else if(action === 'delete'){
+      state.tasks = state.tasks.filter(t => t.id !== task.id);
+      persist(); renderAll();
+    } else if(action === 'edit'){
+      startEdit(task);
+    } else if(action === 'toggleSubtask'){
+      const sub = (task.subtasks||[]).find(s => s.id === el.dataset.subid);
+      if(!sub) return;
+      sub.done = !sub.done;
+      const allDone = task.subtasks.every(s => s.done);
+      if(allDone && task.status !== 'concluida'){ task.status = 'concluida'; task.completedAt = Date.now(); }
+      else if(!allDone && task.status === 'concluida'){ task.status = 'aberta'; task.completedAt = null; }
+      persist(); renderTasks();
+    }
+  });
+
+  // init
+  applySettings();
+  seedInitialData();
+  renderCategorySelect();
+  renderPrioritySelect();
+  renderCatFilterSelect();
+  setCategorySelectValue('trabalho', null);
+  setPrioritySelectValue('normal');
+  renderAll();
+  initAlerts();
+  initVoiceCapture();
+})();
+</script>
+</body>
+</html>
